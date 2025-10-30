@@ -6,7 +6,7 @@ from typing import Dict, Generator
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from airflow.operators.dummy import DummyOperator
+from airflow.operators.empty import EmptyOperator
 from airflow.exceptions import AirflowException
 
 import pandas as pd
@@ -247,8 +247,8 @@ def extract_with_resume_capability(**kwargs):
             final_df = pd.concat(all_chunks, ignore_index=True)
             kwargs['ti'].xcom_push(key='extracted_data', value=final_df.to_json(orient='split'))
             return True
-        else:
-            raise AirflowException("No data extracted")
+        
+        raise AirflowException("No data extracted")
             
     except AirflowException as e:
         # This exception contains resume information
@@ -315,32 +315,28 @@ with DAG(
     tags=['hitex', 'complete', 'production']
 ) as dag:
     
-    start = DummyOperator(task_id='start')
-    end = DummyOperator(task_id='end')
+    start = EmptyOperator(task_id='start')
+    end = EmptyOperator(task_id='end')
     
     extract_task = PythonOperator(
         task_id='extract_with_resume',
         python_callable=extract_with_resume_capability,
-        provide_context=True,
         retries=2
     )
     
     transform_task = PythonOperator(
         task_id='transform_with_quality',
-        python_callable=validate_with_quality_gates,
-        provide_context=True
+        python_callable=validate_with_quality_gates
     )
     
     load_task = PythonOperator(
         task_id='load_to_layers',
-        python_callable=load_to_data_layers,
-        provide_context=True
+        python_callable=load_to_data_layers
     )
     
     verify_task = PythonOperator(
         task_id='verify_business_model',
-        python_callable=verify_business_model,
-        provide_context=True
+        python_callable=verify_business_model
     )
     
     # Define workflow

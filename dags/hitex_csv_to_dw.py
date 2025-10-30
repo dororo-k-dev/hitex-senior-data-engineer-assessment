@@ -8,7 +8,7 @@ from pathlib import Path
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from airflow.operators.dummy import DummyOperator
+from airflow.operators.empty import EmptyOperator
 from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
 from airflow.models import Variable
 from airflow.exceptions import AirflowException
@@ -73,6 +73,9 @@ class SecureCheckpointManager:
                 checkpoint_file.unlink()
             except Exception as e:
                 logger.error(f"Failed to clear checkpoint: {str(e)}")
+
+# Alias for backward compatibility with tests
+CheckpointManager = SecureCheckpointManager
 
 def create_sample_data(**kwargs):
     """Create sample CSV data in secure temporary location"""
@@ -371,40 +374,35 @@ with DAG(
     tags=['hitex', 'csv', 'datawarehouse', 'production', 'secure']
 ) as dag:
     
-    start = DummyOperator(task_id='start')
+    start = EmptyOperator(task_id='start')
     
     create_data = PythonOperator(
         task_id='create_sample_data',
-        python_callable=create_sample_data,
-        provide_context=True
+        python_callable=create_sample_data
     )
     
     extract = PythonOperator(
         task_id='extract_with_fault_tolerance',
         python_callable=extract_with_fault_tolerance,
-        provide_context=True,
         retries=2
     )
     
     transform = PythonOperator(
         task_id='transform_to_dimensional_model',
-        python_callable=transform_to_dimensional_model,
-        provide_context=True
+        python_callable=transform_to_dimensional_model
     )
     
     load = PythonOperator(
         task_id='load_to_bigquery',
-        python_callable=load_to_bigquery,
-        provide_context=True
+        python_callable=load_to_bigquery
     )
     
     validate = PythonOperator(
         task_id='validate_data_warehouse',
-        python_callable=validate_data_warehouse,
-        provide_context=True
+        python_callable=validate_data_warehouse
     )
     
-    end = DummyOperator(task_id='end')
+    end = EmptyOperator(task_id='end')
     
     # Define workflow
     start >> create_data >> extract >> transform >> load >> validate >> end
