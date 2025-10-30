@@ -518,4 +518,16 @@ black dags/ --check
 **Deployment Support**: See `scripts/deploy.sh`  
 **Code Changes**: Submit PR → Automated CI/CD  
 
+## Live Demo Screenshots
+
+### Local Airflow Environment Dashboard
+![Airflow Dashboard](Screenshot%202025-10-31%20at%2012.20.52AM.png)
+*HITEx Data Platform running locally at http://localhost:8080 showing successful deployment and DAG management interface*
+
+### Production DAGs Operational Status
+![DAGs List View](Screenshot%202025-10-31%20at%2012.21.09AM.png)
+*Complete view of all 4 HITEx production pipelines (hitex_csv_to_dw, hitex_amazon_fba_pipeline, hitex_erp_pipeline, hitex_sales_pipeline) loaded and operational*
+
+---
+
 **Status**: Production Ready | **Last Updated**: 2024-01-01 | **Version**: 1.0.0
