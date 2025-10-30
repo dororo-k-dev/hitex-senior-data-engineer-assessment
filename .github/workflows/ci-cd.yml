@@ -161,17 +161,19 @@ jobs:
         gsutil -m cp -r sql/* gs://$COMPOSER_BUCKET/data/sql/
     
     - name: Notify Slack on Success
-      if: success() && secrets.SLACK_WEBHOOK != ''
+      if: success()
       uses: 8398a7/action-slack@v3
       with:
         status: success
         webhook_url: ${{ secrets.SLACK_WEBHOOK }}
         text: 'HITEx Data Platform deployed successfully to production'
+      continue-on-error: true
     
     - name: Notify Slack on Failure
-      if: failure() && secrets.SLACK_WEBHOOK != ''
+      if: failure()
       uses: 8398a7/action-slack@v3
       with:
         status: failure
         webhook_url: ${{ secrets.SLACK_WEBHOOK }}
         text: 'HITEx Data Platform deployment failed'
+      continue-on-error: true
