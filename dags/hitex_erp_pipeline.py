@@ -16,7 +16,7 @@ default_args = {
 def extract_erp_data():
     """Extract data from ERP system"""
     # Implementation for ERP API
-    pass
+    return "ERP data extracted"
 
 with DAG(
     'hitex_erp_pipeline',
@@ -26,7 +26,7 @@ with DAG(
     catchup=False,
     tags=['erp', 'daily', 'sync']
 ) as dag:
-    
+
     extract_task = PythonOperator(
         task_id='extract_erp_data',
         python_callable=extract_erp_data

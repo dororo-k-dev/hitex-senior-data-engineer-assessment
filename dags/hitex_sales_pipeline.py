@@ -1,18 +1,12 @@
 from datetime import datetime, timedelta
 import logging
-import os
 import json
 from pathlib import Path
-from typing import Dict, List, Optional, Generator
-import tempfile
+from typing import Dict, Generator
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.dummy import DummyOperator
-from airflow.providers.google.cloud.hooks.gcs import GCSHook
-from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
-from airflow.utils.task_group import TaskGroup
-from airflow.models import Variable
 from airflow.exceptions import AirflowException
 
 import pandas as pd
@@ -51,10 +45,10 @@ class HitexDataProcessor:
         try:
             # Resume from checkpoint if exists
             if checkpoint_file.exists():
-                with open(checkpoint_file, 'r') as f:
+                with open(checkpoint_file, 'r', encoding='utf-8') as f:
                     checkpoint_data = json.load(f)
                     start_row = checkpoint_data.get('last_processed_row', 0)
-                    self.logger.info(f"Resuming from row {start_row}")
+                    self.logger.info("Resuming from row %s", start_row)
             
             # Simulate connection issues for testing
             if "fail_at_50" in file_path and start_row > 5000:
@@ -72,16 +66,16 @@ class HitexDataProcessor:
                     'total_rows_processed': current_row + len(chunk)
                 }
                 
-                with open(checkpoint_file, 'w') as f:
+                with open(checkpoint_file, 'w', encoding='utf-8') as f:
                     json.dump(checkpoint_data, f)
                 
-                self.logger.info(f"Processed rows {current_row} to {current_row + len(chunk)}")
+                self.logger.info("Processed rows %s to %s", current_row, current_row + len(chunk))
                 yield chunk
                 
         except (ConnectionError, IOError) as e:
-            self.logger.error(f"Connection error at row {start_row}: {str(e)}")
-            self.logger.info(f"Checkpoint saved. Pipeline can resume from row {start_row}")
-            raise AirflowException(f"Extraction failed at row {start_row}. Can resume from checkpoint.")
+            self.logger.error("Connection error at row %s: %s", start_row, str(e))
+            self.logger.info("Checkpoint saved. Pipeline can resume from row %s", start_row)
+            raise AirflowException(f"Extraction failed at row {start_row}. Can resume from checkpoint.") from e
         
         finally:
             # Cleanup checkpoint on successful completion
@@ -153,7 +147,7 @@ class HitexDataProcessor:
             }
             
         except Exception as e:
-            self.logger.error(f"Data quality check failed: {str(e)}")
+            self.logger.error("Data quality check failed: %s", str(e))
             raise
     
     def transform_with_quality_gates(self, df: pd.DataFrame, **kwargs) -> pd.DataFrame:
@@ -210,11 +204,11 @@ class HitexDataProcessor:
         """Load data to BigQuery with proper error handling"""
         try:
             # Simulate BigQuery loading
-            self.logger.info(f"Loading {len(df)} rows to {table_name}")
+            self.logger.info("Loading %s rows to %s", len(df), table_name)
             # In real implementation, use BigQueryHook here
             return True
         except Exception as e:
-            self.logger.error(f"Failed to load to {table_name}: {str(e)}")
+            self.logger.error("Failed to load to %s: %s", table_name, str(e))
             raise
 
 def create_sample_csv():
@@ -288,7 +282,7 @@ def load_to_data_layers(**kwargs):
     
     for layer in layers:
         processor.load_to_bigquery(df, f'{layer}.sales_data', **kwargs)
-        logger.info(f"Loaded data to {layer} layer")
+        logging.getLogger(__name__).info("Loaded data to %s layer", layer)
         ti.xcom_push(key=f'loaded_{layer}', value=True)
     
     return True
@@ -308,7 +302,7 @@ def verify_business_model(**kwargs):
     if quality_metrics['post_transformation']['quality_score'] < 90:
         raise AirflowException("Business model quality standards not met")
     
-    logger.info("Business data model verified successfully")
+    logging.getLogger(__name__).info("Business data model verified successfully")
     return True
 
 # Create the enhanced DAG
