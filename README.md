@@ -51,6 +51,22 @@ Assignment/
 │   ├── hitex_erp_pipeline.py      # ERP system integration
 │   └── hitex_sales_pipeline.py    # Sales data processing
 │
+├── scripts/                      # Deployment & utility scripts
+│   ├── deploy.sh                # GCP deployment automation
+│   ├── local_test.sh            # One-command local testing
+│   ├── open_airflow.sh          # Quick Airflow startup script
+│   ├── run_data_quality_checks.py # Data quality validation
+│   ├── setup_bigquery_tables.py # Schema deployment
+│   └── test_standalone.py       # Standalone validation
+│
+├── diagrams/                     # Architecture & data model diagrams
+│   ├── amazon_fba_model.dbml.svg    # Amazon FBA data model
+│   ├── conceptual_data_model.dbml.svg # Conceptual data architecture
+│   ├── data_quality_framework.dbml.svg # Data quality framework
+│   ├── gcp_architecture.dbml.svg     # GCP infrastructure diagram
+│   ├── logical_data_model.dbml.svg   # Logical data model
+│   └── pipeline_flow.dbml.svg        # Data pipeline flow diagram
+│
 ├── sql/                           # Database schemas & transformations
 │   ├── schemas/                   # Table definitions
 │   │   ├── dim_product.sql       # SCD-2 product dimension
@@ -69,12 +85,11 @@ Assignment/
 │   ├── test_data_quality.py     # Quality validation
 │   └── conftest.py              # Test configuration
 │
-├── scripts/                      # Deployment & utility scripts
-│   ├── local_test.sh            # One-command local testing
-│   ├── test_standalone.py       # Standalone validation
-│   ├── deploy.sh                # GCP deployment
-│   ├── setup_bigquery_tables.py # Schema deployment
-│   └── run_data_quality_checks.py # Data quality validation
+├── config/                     # Configuration files
+│   ├── config.yaml            # Main configuration
+│   ├── gcp_config.yaml        # GCP service configuration
+│   ├── amazon_api_config.yaml # Amazon API settings
+│   └── erp_config.yaml        # ERP integration config
 │
 ├── requirements/                 # Dependencies
 │   ├── requirements-test.txt    # Full testing environment
@@ -83,14 +98,10 @@ Assignment/
 ├── .github/workflows/           # CI/CD pipeline
 │   └── ci-cd.yml               # Automated testing & deployment
 │
-├── config/                     # Configuration files
-│   ├── config.yaml            # Main configuration
-│   ├── gcp_config.yaml        # GCP service configuration
-│   ├── amazon_api_config.yaml # Amazon API settings
-│   └── erp_config.yaml        # ERP integration config
-│
 ├── plugins/                    # Custom Airflow components
 │   └── __init__.py            # Plugin initialization
+│
+├── images/                     # Screenshots & documentation images
 │
 ├── logs/                       # Airflow logs (auto-generated)
 │   ├── dag_processor_manager/ # DAG processor logs
@@ -104,8 +115,6 @@ Assignment/
 ├── pyproject.toml            # Python project config
 ├── .env                      # Environment variables
 ├── .gitignore               # Version control exclusions
-├── open_airflow.sh          # Quick Airflow startup script
-├── SOLUTION_DESIGN.md       # Technical design document
 └── README.md                # This file
 ```
 
@@ -140,11 +149,23 @@ Assignment/
 ### Deployment & Operations
 | File/Directory | Purpose | Description |
 |----------------|---------|-------------|
-| **scripts/local_test.sh** | Local Testing | One-command local environment testing |
 | **scripts/deploy.sh** | Production Deploy | GCP production deployment automation |
+| **scripts/local_test.sh** | Local Testing | One-command local environment testing |
+| **scripts/open_airflow.sh** | Quick Start | One-command Airflow startup script |
+| **scripts/run_data_quality_checks.py** | Quality Checks | Data quality validation runner |
 | **scripts/setup_bigquery_tables.py** | Schema Deploy | BigQuery table creation and setup |
 | **scripts/test_standalone.py** | Validation | Standalone code validation without Docker |
-| **scripts/run_data_quality_checks.py** | Quality Checks | Data quality validation runner |
+
+### Architecture & Documentation
+| File/Directory | Purpose | Description |
+|----------------|---------|-------------|
+| **diagrams/amazon_fba_model.dbml.svg** | Data Model | Amazon FBA data model visualization |
+| **diagrams/conceptual_data_model.dbml.svg** | Architecture | Conceptual data architecture diagram |
+| **diagrams/data_quality_framework.dbml.svg** | Quality Framework | Data quality validation framework |
+| **diagrams/gcp_architecture.dbml.svg** | Infrastructure | GCP infrastructure architecture diagram |
+| **diagrams/logical_data_model.dbml.svg** | Data Model | Logical data model relationships |
+| **diagrams/pipeline_flow.dbml.svg** | Pipeline Flow | Data pipeline flow and dependencies |
+| **images/** | Screenshots | Documentation screenshots and images |
 
 ### Configuration & Environment
 | File/Directory | Purpose | Description |
@@ -161,7 +182,6 @@ Assignment/
 | **docker-compose.simple.yml** | Simple Environment | Lightweight local Airflow setup |
 | **docker-compose.test.yml** | Test Environment | Full testing environment with dependencies |
 | **Dockerfile** | Container Definition | Application containerization specification |
-| **open_airflow.sh** | Quick Start | One-command Airflow startup script |
 
 ### Dependencies & Build
 | File/Directory | Purpose | Description |
@@ -220,7 +240,7 @@ cd Assignment/
 ./scripts/local_test.sh
 
 # 3. Start local Airflow environment
-./open_airflow.sh
+./scripts/open_airflow.sh
 # Access: http://localhost:8080 (admin/admin)
 ```
 
@@ -470,7 +490,7 @@ docker-compose -f docker-compose.simple.yml restart
 ### Local Development Commands
 ```bash
 # Start local environment
-./open_airflow.sh
+./scripts/open_airflow.sh
 
 # Stop local environment
 docker-compose -f docker-compose.simple.yml down
