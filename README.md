@@ -6,6 +6,10 @@
 
 **Production-ready data platform for HITEx's multi-channel CPG operations. Handles 10M+ records with fault tolerance, security compliance, and automated deployment.**
 
+**AirFlow UI:**
+
+<img width="1207" height="696" alt="Screenshot 2025-10-31 at 12 20 52 AM" src="https://github.com/user-attachments/assets/cac5ae12-054d-4534-b20e-3e3259c88794" />
+
 ## Quick Deploy (5 Minutes)
 
 ```bash
