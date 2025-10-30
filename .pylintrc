@@ -1,0 +1,21 @@
+[MASTER]
+load-plugins=pylint_airflow
+
+[MESSAGES CONTROL]
+disable=C0114,C0115,C0116,R0903,R0913,W0613,C0103
+
+[FORMAT]
+max-line-length=100
+good-names=i,j,k,ex,Run,_,df,ti
+
+[DESIGN]
+max-args=8
+max-locals=20
+max-returns=6
+max-branches=15
+max-statements=60
+
+[SIMILARITIES]
+min-similarity-lines=10
+ignore-comments=yes
+ignore-docstrings=yes

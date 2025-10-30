@@ -1,0 +1,37 @@
+project:
+  name: "hitex-data-platform"
+  version: "1.0.0"
+  environment: "production"
+
+data_sources:
+  amazon_fba:
+    api_base_url: "https://sellingpartnerapi.amazon.com"
+    report_types:
+      listing_report: "GET_MERCHANT_LISTINGS_ALL_DATA"
+      inventory_report: "GET_FBA_INVENTORY_ADJUSTMENTS_DATA"
+    polling_interval_hours: 2
+    max_retries: 5
+    
+  erp_system:
+    api_base_url: "https://erp.hitex.com/api"
+    tables:
+      - "sales_orders"
+      - "inventory_transactions" 
+      - "customers"
+      - "products"
+    sync_frequency: "daily"
+
+bigquery:
+  project_id: "hitex-data-project"
+  location: "US"
+  datasets:
+    raw: "hitex_raw"
+    staging: "hitex_staging"
+    core: "hitex_core"
+    mart: "hitex_mart"
+
+data_quality:
+  thresholds:
+    null_threshold: 0.05
+    duplicate_threshold: 0.01
+    freshness_threshold_hours: 24

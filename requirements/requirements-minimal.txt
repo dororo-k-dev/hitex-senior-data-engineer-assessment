@@ -1,0 +1,5 @@
+# Minimal requirements for testing without full Airflow
+pandas==2.1.4
+numpy==1.24.3
+pathlib2==2.3.7
+pyyaml==6.0.1
