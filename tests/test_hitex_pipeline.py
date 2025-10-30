@@ -1,4 +1,5 @@
 import pytest
+import pandas as pd
 from dags.hitex_sales_pipeline import HitexDataProcessor
 
 class TestHitexPipeline:
@@ -12,7 +13,7 @@ class TestHitexPipeline:
         assert len(sample_data) > 0
         
         # Test transformation
-        transformed = processor.transform_sales_data(sample_data)
+        transformed = processor._apply_transformations(sample_data)
         assert 'processed_at' in transformed.columns
         
         # Test quality checks
@@ -26,4 +27,4 @@ class TestHitexPipeline:
         # Test with empty data
         empty_df = pd.DataFrame()
         with pytest.raises(Exception):
-            processor.transform_sales_data(empty_df)
+            processor._apply_transformations(empty_df)
