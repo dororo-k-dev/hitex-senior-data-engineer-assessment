@@ -70,7 +70,7 @@ def test_checkpoint_manager():
         mgr.clear_checkpoint("test_job")
         assert mgr.load_checkpoint("test_job") is None
         
-        print("✅ CheckpointManager test passed!")
+        print("CheckpointManager test passed!")
 
 def test_data_quality_checks():
     """Test data quality functions"""
@@ -129,10 +129,10 @@ def test_data_quality_checks():
     assert quality_results['overall_score'] == 100.0
     assert quality_results['passed_checks'] == quality_results['total_checks']
     
-    print("✅ Data quality checks test passed!")
+    print("Data quality checks test passed!")
 
 if __name__ == "__main__":
     print("Running local tests...")
     test_checkpoint_manager()
     test_data_quality_checks()
-    print("🎉 All local tests passed!")
+    print("All local tests passed!")
