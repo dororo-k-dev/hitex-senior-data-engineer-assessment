@@ -22,43 +22,47 @@ from dags.hitex_csv_to_dw import (
 
 class TestHitexCsvToDw:
     """Test suite for HITEx CSV to Data Warehouse pipeline"""
-    
+
     @pytest.fixture
     def dag_bag(self):
-        return DagBag(dag_folder='dags/', include_examples=False)
-    
+        return DagBag(dag_folder="dags/", include_examples=False)
+
     @pytest.fixture
     def sample_context(self):
         return {
-            'ti': Mock(),
-            'ds': '2024-01-01',
-            'execution_date': datetime(2024, 1, 1),
-            'params': {}
+            "ti": Mock(),
+            "ds": "2024-01-01",
+            "execution_date": datetime(2024, 1, 1),
+            "params": {},
         }
     
     def test_dag_loaded_successfully(self, dag_bag):
         """Test that the DAG loads without errors"""
-        dag = dag_bag.get_dag('hitex_csv_to_dw')
+        dag = dag_bag.get_dag("hitex_csv_to_dw")
         assert dag is not None
         assert len(dag.tasks) == 7
         assert dag_bag.import_errors == {}
-    
+
     def test_dag_structure(self, dag_bag):
         """Test DAG structure and dependencies"""
-        dag = dag_bag.get_dag('hitex_csv_to_dw')
-        
+        dag = dag_bag.get_dag("hitex_csv_to_dw")
+
         expected_tasks = [
-            'start', 'create_sample_data', 'extract_with_fault_tolerance',
-            'transform_to_dimensional_model', 'load_to_bigquery',
-            'validate_data_warehouse', 'end'
+            "start",
+            "create_sample_data",
+            "extract_with_fault_tolerance",
+            "transform_to_dimensional_model",
+            "load_to_bigquery",
+            "validate_data_warehouse",
+            "end",
         ]
-        
+
         actual_tasks = [task.task_id for task in dag.tasks]
         assert set(expected_tasks) == set(actual_tasks)
-        
+
         # Test dependencies
-        extract_task = dag.get_task('extract_with_fault_tolerance')
-        assert 'create_sample_data' in [t.task_id for t in extract_task.upstream_list]
+        extract_task = dag.get_task("extract_with_fault_tolerance")
+        assert "create_sample_data" in [t.task_id for t in extract_task.upstream_list]
     
     def test_create_sample_data(self, sample_context):
         """Test sample data creation"""
@@ -269,11 +273,11 @@ class TestHitexCsvToDw:
         assert result is True
         
         # Verify xcom push was called with transformed data
-        sample_context['ti'].xcom_push.assert_called()
-        call_args = sample_context['ti'].xcom_push.call_args
-        assert call_args[1]['key'] == 'transformed_data'
-        
-        transformed_data = call_args[1]['value']
-        assert 'dim_product' in transformed_data
-        assert 'fct_sales' in transformed_data
-        assert 'quality_metrics' in transformed_data
+        sample_context["ti"].xcom_push.assert_called()
+        call_args = sample_context["ti"].xcom_push.call_args
+        assert call_args[1]["key"] == "transformed_data"
+
+        transformed_data = call_args[1]["value"]
+        assert "dim_product" in transformed_data
+        assert "fct_sales" in transformed_data
+        assert "quality_metrics" in transformed_data
