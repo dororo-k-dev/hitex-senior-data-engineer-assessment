@@ -1,5 +1,6 @@
-import pytest
 import pandas as pd
+import pytest
+
 from dags.hitex_sales_pipeline import HitexDataProcessor
 
 def test_data_quality_validation():

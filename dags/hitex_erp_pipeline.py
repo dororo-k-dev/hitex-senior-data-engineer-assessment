@@ -1,7 +1,15 @@
-"""
-ERP System Pipeline - Daily data sync
+"""HITEx ERP System Pipeline - Daily Data Synchronization.
+
+This module implements the ERP system integration pipeline for HITEx,
+handling daily data synchronization from enterprise resource planning systems.
+
+Features:
+- Daily scheduled sync
+- ERP API integration
+- Error handling and retry logic
 """
 from datetime import datetime, timedelta
+
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 

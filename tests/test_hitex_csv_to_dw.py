@@ -1,23 +1,23 @@
-import pytest
-import pandas as pd
-from unittest.mock import Mock, patch, MagicMock
-from datetime import datetime
 import json
-import tempfile
 import os
+import tempfile
+from datetime import datetime
+from unittest.mock import MagicMock, Mock, patch
 
+import pandas as pd
+import pytest
 from airflow.models import DagBag, TaskInstance
-from airflow.utils.state import State
 from airflow.utils.dates import days_ago
+from airflow.utils.state import State
 
 from dags.hitex_csv_to_dw import (
+    CheckpointManager,
     create_sample_data,
     extract_with_fault_tolerance,
-    transform_to_dimensional_model,
     load_to_bigquery,
+    run_data_quality_checks,
+    transform_to_dimensional_model,
     validate_data_warehouse,
-    CheckpointManager,
-    run_data_quality_checks
 )
 
 class TestHitexCsvToDw:

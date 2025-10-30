@@ -1,16 +1,27 @@
-from datetime import datetime, timedelta
-import logging
+"""HITEx Sales Pipeline with Enhanced Fault Tolerance.
+
+This module implements a comprehensive sales data processing pipeline
+with advanced fault tolerance, data quality checks, and multi-layer
+data architecture support.
+
+Features:
+- Checkpoint-based resume capability
+- Quality gates and validation
+- Multi-layer data loading (Raw → Staging → Core → Mart)
+- Business model verification
+"""
 import json
+import logging
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, Generator
 
-from airflow import DAG
-from airflow.operators.python import PythonOperator
-from airflow.operators.empty import EmptyOperator
-from airflow.exceptions import AirflowException
-
-import pandas as pd
 import numpy as np
+import pandas as pd
+from airflow import DAG
+from airflow.exceptions import AirflowException
+from airflow.operators.empty import EmptyOperator
+from airflow.operators.python import PythonOperator
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

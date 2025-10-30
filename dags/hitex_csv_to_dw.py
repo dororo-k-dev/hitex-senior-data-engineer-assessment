@@ -1,17 +1,28 @@
+"""HITEx CSV to Data Warehouse Pipeline.
+
+This module implements a secure, fault-tolerant data pipeline that extracts
+CSV data, transforms it into a dimensional model, and loads it into BigQuery.
+
+Features:
+- Checkpoint-based fault tolerance
+- Data quality validation
+- SCD-2 dimension handling
+- Secure file operations
+"""
 from datetime import datetime, timedelta
-import logging
-import pandas as pd
 import json
-import tempfile
+import logging
 import os
+import tempfile
 from pathlib import Path
 
+import pandas as pd
 from airflow import DAG
-from airflow.operators.python import PythonOperator
-from airflow.operators.empty import EmptyOperator
-from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
-from airflow.models import Variable
 from airflow.exceptions import AirflowException
+from airflow.models import Variable
+from airflow.operators.empty import EmptyOperator
+from airflow.operators.python import PythonOperator
+from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +48,13 @@ class SecureCheckpointManager:
         self.checkpoint_dir.mkdir(exist_ok=True, mode=0o700)
     
     def save_checkpoint(self, job_id: str, processed_rows: int, total_rows: int):
+        """Save checkpoint data for fault tolerance.
+        
+        Args:
+            job_id: Unique identifier for the job
+            processed_rows: Number of rows processed so far
+            total_rows: Total number of rows to process
+        """
         # Sanitize job_id to prevent path traversal
         safe_job_id = "".join(c for c in job_id if c.isalnum() or c in ('_', '-'))
         checkpoint_file = self.checkpoint_dir / f"{safe_job_id}.json"
@@ -57,6 +75,14 @@ class SecureCheckpointManager:
             raise
     
     def load_checkpoint(self, job_id: str):
+        """Load checkpoint data for job resumption.
+        
+        Args:
+            job_id: Unique identifier for the job
+            
+        Returns:
+            dict: Checkpoint data or None if not found
+        """
         safe_job_id = "".join(c for c in job_id if c.isalnum() or c in ('_', '-'))
         checkpoint_file = self.checkpoint_dir / f"{safe_job_id}.json"
         
@@ -69,6 +95,11 @@ class SecureCheckpointManager:
         return None
     
     def clear_checkpoint(self, job_id: str):
+        """Clear checkpoint data after successful completion.
+        
+        Args:
+            job_id: Unique identifier for the job
+        """
         safe_job_id = "".join(c for c in job_id if c.isalnum() or c in ('_', '-'))
         checkpoint_file = self.checkpoint_dir / f"{safe_job_id}.json"
         
